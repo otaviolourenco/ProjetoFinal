@@ -1,3 +1,15 @@
+<?php
+//verifica se o usuário está logado
+session_start();
+
+if (!isset($_SESSION['IDcliente'])) {
+    echo '<script>alert("Por favor, faça o login!"); window.location.href = "../content/login.php";</script>';
+    exit();
+} else {
+    echo '<script>console.log("Você está logado como ' . $_SESSION["Nome"] . '");</script>';
+}
+?>
+
 <!doctype html>
 <html lang="pt">
 
@@ -31,7 +43,7 @@
                         <button class="btn-yellow rounded-end-3">Pesquisar</button>
                     </div>
 
-                    <span class="tel"><i class="fa-solid fa-headset"></i> 3244-0562
+                    <span class="tel"><i class="fa-solid fa-headset"></i> 213 145 221
                         <h4>suporte 24h/7dias</h4>
                     </span>
                 </div>
@@ -46,17 +58,23 @@
                 <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a href="../index.php">Início</a></li>
-                        <li class="breadcrumb-item"><a href="cart.php">Carrinho</a></li>
+                        <li class="breadcrumb-item"><a href="../pages/cart.php">Carrinho</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Checkout</li>
                     </ul>
                 </nav>
 
                 <div>
-                    <nav>
-                        <ul>
-                            <li><a href="">Comprar</a></li>
-                        </ul>
-                    </nav>
+                    <div class="float-end me-5 d-flex flex-row justify-content-evenly">
+                        <?php
+                        session_start();
+                        if (isset($_SESSION['IDcliente'])) {
+                            echo '<p> Olá, ' . $_SESSION['Nome'] . '!</p>';
+                        } else {
+                            echo '<a href="pages/login.php"><button class="btn btn-primary-new"><i class="fa-solid fa-user"></i> Entrar</button></a>';
+                        }
+                        ?>
+                        <a href="assets/logout.php" class="px-4 pt-2" title="Sair"><i class="fa-solid fa-right-from-bracket"></i></a>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,3 +1,58 @@
+<?php
+session_start();
+
+include('../connect_db.php');
+
+function obterProduto($conn, $idProduto)
+{
+    $query = "SELECT * FROM Produtos WHERE IDproduto = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('i', $idProduto);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_assoc();
+}
+
+$produtosCarrinho = [];
+
+if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
+    foreach ($_SESSION['carrinho'] as $idProduto => $quantidade) {
+        $produto = obterProduto($conn, $idProduto);
+        $produto['quantidade'] = $quantidade;
+        $produtosCarrinho[] = $produto;
+    }
+}
+
+// Verifique se o ID do produto e a nova quantidade foram enviados na solicitação POST
+if (isset($_POST['IDproduto']) && isset($_POST['quantidade'])) {
+    $idProduto = $_POST['IDproduto'];
+    $newQuantity = $_POST['quantidade'];
+
+    // Atualize a quantidade do produto no carrinho
+    $cart = $_SESSION['carrinho'];
+    foreach ($cart as &$product) {
+        if ($product['id'] == $idProduto) {
+            $product['quantidade'] = $newQuantity;
+            $product['total'] = $product['Preco'] * $newQuantity;
+            break;
+        }
+    }
+    $_SESSION['carrinho'] = $cart;
+
+    // Retorne a nova quantidade e o novo total do produto em um objeto JSON
+    $response = array(
+        'quantidade' => $newQuantity,
+        'total' => number_format($product['total'], 2, ',', '.')
+    );
+    echo json_encode($response);
+} else {
+    // Se o ID do produto e a nova quantidade não foram enviados, retorne um erro
+    http_response_code(400);
+    echo 'Erro: ID do produto e nova quantidade não foram enviados';
+}
+
+?>
+
 <!doctype html>
 <html lang="pt">
 
@@ -31,7 +86,7 @@
                         <button class="btn-yellow rounded-end-3">Pesquisar</button>
                     </div>
 
-                    <span class="tel"><i class="fa-solid fa-headset"></i> 3244-0562
+                    <span class="tel"><i class="fa-solid fa-headset"></i> 213 145 221
                         <h4>suporte 24h/7dias</h4>
                     </span>
                 </div>
@@ -51,11 +106,17 @@
                 </nav>
 
                 <div>
-                    <nav>
-                        <ul>
-                            <li><a href="">Comprar</a></li>
-                        </ul>
-                    </nav>
+                    <div class="float-end me-5 d-flex flex-row justify-content-evenly">
+                        <?php
+                        session_start();
+                        if (isset($_SESSION['IDcliente'])) {
+                            echo '<p> Olá, ' . $_SESSION['Nome'] . '!</p>';
+                        } else {
+                            echo '<a href="login.php"><button class="btn btn-primary-new"><i class="fa-solid fa-user"></i> Entrar</button></a>';
+                        }
+                        ?>
+                        <a href="assets/logout.php" class="px-4" title="Sair"><i class="fa-solid fa-right-from-bracket"></i></a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -65,68 +126,37 @@
     <div class="container py-5">
         <div class="row">
             <div class="col-md">
-                <div class="d-flex flex-row justify-content-center my-2 py-4 rounded-3 table-responsive" style="background-color: var(--grey-color);">
-                    <table>
-                        <tr class="tabela-cart p-2">
-                            <th></th>
-                            <th>Produto</th>
-                            <th>Valor</th>
-                            <th>Quant.</th>
-                            <th>Total</th>
-                        </tr>
+                <?php foreach ($produtosCarrinho as $row) : ?>
+                    <div class="d-flex flex-row justify-content-evenly my-2 py-4 rounded-3 table-responsive" style="background-color: var(--grey-color);">
+                        <table>
+                            <tr class="tabela-cart">
+                                <th> </th>
+                                <th>Produto</th>
+                                <th>Valor</th>
+                                <th>Quant.</th>
+                                <th>Total</th>
+                            </tr>
 
-                        <tr>
-                            <td><img src="../images/carousel/carousel.jpg" alt="" height="90rem" width="90rem"></td>
-                            <td>Nome produto</td>
-                            <td>€5,89</td>
-                            <td><input class="input-quant" type="number" name="" id=""></td>
-                            <td>€5,89</td>
-                            <td><button class="btn btn-primary-new">Remover</button></td>
-                        </tr>
-                    </table>
-                </div>
+                            <tr>
+                                <td><img src="../images/carousel/carousel.jpg" alt="" height="90rem" width="90rem"></td>
 
-                <div class="d-flex flex-row justify-content-evenly my-2 py-4 rounded-3 table-responsive" style="background-color: var(--grey-color);">
-                    <table>
-                        <tr class="tabela-cart">
-                            <th>Produto</th>
-                            <th>Valor</th>
-                            <th>Quant.</th>
-                            <th>Total</th>
-                        </tr>
+                                <td><?php echo $row['NomeProduto']; ?></td>
 
-                        <tr>
-                            <td><img src="../images/carousel/carousel.jpg" alt="" height="90rem" width="90rem"></td>
+                                <td>€<?php echo $row['Preco']; ?></td>
 
-                            <td>Nome produto</td>
-                            <td>€5,89</td>
-                            <td><input class="input-quant" type="number" name="" id=""></td>
-                            <td>€5,89</td>
-                            <td><button class="btn btn-primary-new">Remover</button></td>
-                        </tr>
-                    </table>
-                </div>
+                                <td>
+                                    <form action="cart.php" method="POST">
+                                        <input class="input-quant" type="number" name="quantidade" id="" value="<?php echo $row['quantidade']; ?>">
+                                    </form>
+                                </td>
 
-                <div class="d-flex flex-row justify-content-evenly my-2 py-4 rounded-3 table-responsive" style="background-color: var(--grey-color);">
-                    <table>
-                        <tr class="tabela-cart">
-                            <th>Produto</th>
-                            <th>Valor</th>
-                            <th>Quant.</th>
-                            <th>Total</th>
-                        </tr>
+                                <td>€<?php echo $row['Preco'] * $row['quantidade']; ?></td>
 
-                        <tr>
-                            <td><img src="../images/carousel/carousel.jpg" alt="" height="90rem" width="90rem"></td>
-
-                            <td>Nome produto</td>
-                            <td>€5,89</td>
-                            <td><input class="input-quant" type="number" name="" id=""></td>
-                            <td>€5,89</td>
-                            <td><button class="btn btn-primary-new">Remover</button></td>
-                        </tr>
-                    </table>
-                </div>
+                                <td><button class="btn btn-primary-new">Remover</button></td>
+                            </tr>
+                        </table>
+                    </div>
+                <?php endforeach; ?>
             </div>
         </div>
     </div>

@@ -1,3 +1,7 @@
+<?php
+session_start();
+?>
+
 <!doctype html>
 <html lang="pt">
 
@@ -31,7 +35,7 @@
                         <button class="btn-yellow rounded-end-3">Pesquisar</button>
                     </div>
 
-                    <span class="tel"><i class="fa-solid fa-headset"></i> 3244-0562
+                    <span class="tel"><i class="fa-solid fa-headset"></i> 213 145 221
                         <h4>suporte 24h/7dias</h4>
                     </span>
                 </div>
@@ -50,8 +54,17 @@
                         <li><a href="#top-vendas">Recomendados</a></li>
                     </ul>
                     <div class="float-end me-5 d-flex flex-row justify-content-evenly">
+                        <?php
+                        session_start();
+                        if (isset($_SESSION['IDcliente'])) {
+                            echo '<p> Olá, ' . $_SESSION['Nome'] . '!</p>';
+                        } else {
+                            echo '<a href="pages/login.php"><button class="btn btn-primary-new"><i class="fa-solid fa-user"></i> Entrar</button></a>';
+                        }
+                        ?>
                         <a href="pages/cart.php" class="px-4"><i class="fa-solid fa-cart-shopping"></i></a>
-                        <p>Minha conta</p>
+
+                        <a href="assets/logout.php" class="px-4" title="Sair"><i class="fa-solid fa-right-from-bracket"></i></a>
                     </div>
                 </nav>
 
@@ -231,10 +244,45 @@
         <div class="row py-5">
             <h2>Itens</h2>
         </div>
-
+        <div class="d-flex justify-content-center fixed-top w-50">
+            <div id="msg-sucesso" style="display: none;" class="alert alert-success" role="alert">
+                <p>O produto foi adicionado ao carrinho</p>
+            </div>
+        </div>
         <div class="row">
             <div class="col-sm d-flex justify-content-evenly flex-wrap">
-                <div class="card-top">
+                <?php
+                include('connect_db.php');
+
+                $sql = "SELECT * FROM Produtos";
+                $result = mysqli_query($conn, $sql);
+
+                while ($row = mysqli_fetch_assoc($result)) {
+                    echo '<div class="card-top"> 
+                    <img src="images/carousel/carousel.jpg" class="card-img-top" alt="..." height="180">
+                    <div class="pt-3 px-3">
+                        <ol class="rated-star">
+                            <li><i class="fa-solid fa-star"></i></li>
+                            <li><i class="fa-solid fa-star"></i></li>
+                            <li><i class="fa-solid fa-star"></i></li>
+                            <li><i class="fa-solid fa-star"></i></li>
+                            <li><i class="fa-regular fa-star-half-stroke"></i></li>
+                        </ol>';
+                    echo "<p class=''>" . $row['NomeProduto'] . "</p>";
+                    echo "<div class='d-flex flex-row justify-content-around align-items-center pb-2'>
+                            <p class='fs-2'>" . $row['PrecoPromo'] . "</p>";
+                    echo "<p class='text-danger text-decoration-line-through px-3'>" . $row['Preco'] . "</p>";
+                    echo "<form action='index.php' method='post'>";
+                    echo "<input type='hidden' name='IDproduto' value=<" . $row['IDproduto'] . ">";
+                    echo "<a href='adicionar_carrinho.php?idProduto=" . $row['IDproduto'] . "' class='btn-add-car float-end'><i class='fa-solid fa-cart-plus'></i></a>
+                    </form>
+                        </div>
+                    </div>
+                </div>";
+                }
+                ?>
+
+                <!--<div class="card-top">
                     <img src="images/carousel/carousel.jpg" class="card-img-top" alt="..." height="180">
                     <div class="pt-3 px-3">
                         <ol class="rated-star">
@@ -308,26 +356,7 @@
                             <button class="btn-add-car float-end"><i class="fa-solid fa-cart-plus"></i></button>
                         </div>
                     </div>
-                </div>
-
-                <div class="card-top">
-                    <img src="images/carousel/carousel.jpg" class="card-img-top" alt="..." height="180">
-                    <div class="pt-3 px-3">
-                        <ol class="rated-star">
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-regular fa-star-half-stroke"></i></li>
-                        </ol>
-                        <p class="">Nome produto</p>
-                        <div class="d-flex flex-row justify-content-around align-items-center pb-2">
-                            <p class="fs-2">€6.50</p>
-                            <p class="text-danger text-decoration-line-through px-3">€7.50</p>
-                            <button class="btn-add-car float-end"><i class="fa-solid fa-cart-plus"></i></button>
-                        </div>
-                    </div>
-                </div>
+                </div>-->
             </div>
         </div>
     </div>
@@ -594,7 +623,44 @@
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+
     <script src="JS/countdown.js"></script>
+
+    <!-- Script para enviar a solicitação AJAX -->
+    <script>
+        // Selecione o botão "Adicionar ao carrinho"
+        const btnsAdicionarCarrinho = document.querySelectorAll('.btn-add-car');
+
+        // Selecione a div para exibir a mensagem de sucesso
+        const divMensagem = document.querySelector('#msg-sucesso');
+
+        // Adicione um ouvinte de eventos de clique a cada botão
+        btnsAdicionarCarrinho.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Envie uma solicitação AJAX para adicionar_carrinho.php
+                fetch('adicionar_carrinho.php', {
+                        method: 'POST'
+                    })
+                    .then(response => {
+                        // Verifique se a resposta tem um código de status 204 (sem conteúdo)
+                        if (response.status === 204) {
+                            // Exiba a mensagem de sucesso na página
+                            divMensagem.style.display = 'block';
+
+                            // Oculte a mensagem após 3 segundos
+                            setTimeout(() => {
+                                divMensagem.style.display = 'none';
+                            }, 3000);
+                        } else {
+                            console.error('Erro ao adicionar produto ao carrinho');
+                        }
+                    })
+                    .catch(error => {
+                        console.error(error);
+                    });
+            });
+        });
+    </script>
 </body>
 
 </html>
