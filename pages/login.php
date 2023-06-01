@@ -45,6 +45,7 @@ if (isset($_POST['email-login']) && isset($_POST['senha-login'])) {
             $_SESSION['IDcliente'] = $usuario['IDcliente'];
             $_SESSION['Nome'] = $usuario['Nome'];
             $_SESSION['Email'] = $email;
+            $_SESSION['NivelAcesso'] = $usuario['NivelAcesso'];
             header('Location: ../index.php');
             exit();
         } else {

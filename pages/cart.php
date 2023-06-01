@@ -13,7 +13,6 @@ function obterProduto($conn, $idProduto)
     return $result->fetch_assoc();
 }
 
-$produtosCarrinho = [];
 
 if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
     foreach ($_SESSION['carrinho'] as $idProduto => $quantidade) {
@@ -22,35 +21,6 @@ if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
         $produtosCarrinho[] = $produto;
     }
 }
-
-// Verifique se o ID do produto e a nova quantidade foram enviados na solicitação POST
-if (isset($_POST['IDproduto']) && isset($_POST['quantidade'])) {
-    $idProduto = $_POST['IDproduto'];
-    $newQuantity = $_POST['quantidade'];
-
-    // Atualize a quantidade do produto no carrinho
-    $cart = $_SESSION['carrinho'];
-    foreach ($cart as &$product) {
-        if ($product['id'] == $idProduto) {
-            $product['quantidade'] = $newQuantity;
-            $product['total'] = $product['Preco'] * $newQuantity;
-            break;
-        }
-    }
-    $_SESSION['carrinho'] = $cart;
-
-    // Retorne a nova quantidade e o novo total do produto em um objeto JSON
-    $response = array(
-        'quantidade' => $newQuantity,
-        'total' => number_format($product['total'], 2, ',', '.')
-    );
-    echo json_encode($response);
-} else {
-    // Se o ID do produto e a nova quantidade não foram enviados, retorne um erro
-    http_response_code(400);
-    echo 'Erro: ID do produto e nova quantidade não foram enviados';
-}
-
 ?>
 
 <!doctype html>
@@ -115,7 +85,7 @@ if (isset($_POST['IDproduto']) && isset($_POST['quantidade'])) {
                             echo '<a href="login.php"><button class="btn btn-primary-new"><i class="fa-solid fa-user"></i> Entrar</button></a>';
                         }
                         ?>
-                        <a href="assets/logout.php" class="px-4" title="Sair"><i class="fa-solid fa-right-from-bracket"></i></a>
+                        <a href="../assets/logout.php" class="px-4" title="Sair"><i class="fa-solid fa-right-from-bracket"></i></a>
                     </div>
                 </div>
             </div>

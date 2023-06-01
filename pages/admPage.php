@@ -2,13 +2,13 @@
 //verifica se o usuário está logado
 session_start();
 
-if (!isset($_SESSION['IDcliente'])) {
-    echo '<script>alert("Por favor, faça o login!"); window.location.href = "../content/login.php";</script>';
-    exit();
+if ($_SESSION['NivelAcesso'] == 1) {
+    $admContent = "display: block;";
 } else {
-    echo '<script>console.log("Você está logado como ' . $_SESSION["Nome"] . '");</script>';
+    $admContent = "display: none;";
 }
 ?>
+
 
 <!doctype html>
 <html lang="pt">
@@ -58,8 +58,7 @@ if (!isset($_SESSION['IDcliente'])) {
                 <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
                     <ul class="breadcrumb">
                         <li class="breadcrumb-item"><a href="../index.php">Início</a></li>
-                        <li class="breadcrumb-item"><a href="../pages/cart.php">Carrinho</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Checkout</li>
+                        <li class="breadcrumb-item active" aria-current="page">Carrinho</li>
                     </ul>
                 </nav>
 
@@ -70,60 +69,38 @@ if (!isset($_SESSION['IDcliente'])) {
                         if (isset($_SESSION['IDcliente'])) {
                             echo '<p> Olá, ' . $_SESSION['Nome'] . '!</p>';
                         } else {
-                            echo '<a href="pages/login.php"><button class="btn btn-primary-new"><i class="fa-solid fa-user"></i> Entrar</button></a>';
+                            echo '<a href="login.php"><button class="btn btn-primary-new"><i class="fa-solid fa-user"></i> Entrar</button></a>';
                         }
                         ?>
-                        <a href="../assets/logout.php" class="px-4 pt-2" title="Sair"><i class="fa-solid fa-right-from-bracket"></i></a>
+                        <a href="../assets/logout.php" class="px-4" title="Sair"><i class="fa-solid fa-right-from-bracket"></i></a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!--Infor entrega-->
-    <div class="container py-5">
-        <div class="row">
-            <h2>Entrega</h2>
-        </div>
+    <!--Administrativo dos produtos-->
+    <div class="container d-flex justify-content-center align-items-center">
+        <div class="row mt-5">
+            <div class="col-md d-flex justify-content-center align-items-center p-5" style="background-color: var(--grey-color)">
+                <form action="">
+                    <input type="text" placeholder="Nome do produto"><br>
 
-        <div class="row d-flex justify-content-between">
-            <div class="col-md-8">
-                <div class="card p-4 d-flex justify-content-center">
-                    <form action="" method="post">
-                        <div class="input-group mb-4">
-                            <input required="" type="text" name="text" autocomplete="off" class="input-ck">
-                            <label class="user-label">Primeiro nome</label>
-                        </div>
+                    <input type="text" placeholder="Preço"><br>
 
-                        <div class="input-group mb-4">
-                            <input required="" type="text" name="text" autocomplete="off" class="input-ck">
-                            <label class="user-label">Último nome</label>
-                        </div>
+                    <input type="text" placeholder="Preço Promocional"><br>
 
-                        <div class="input-group mb-4">
-                            <input required="" type="text" name="text" autocomplete="off" class="input-ck">
-                            <label class="user-label">Morada</label>
-                        </div>
+                    <input type="number" name="" id="" placeholder="Qtd. Estoque"><br>
 
-                        <div class="input-group mb-4">
-                            <input required="" id="codigoPostalInput" type="text" name="text" autocomplete="off" maxlength="8" class="input-ck" oninput="formatarCodigoPostal(this)">
-                            <label class="user-label">Código postal</label>
-                        </div>
-                    </form>
-                </div>
-            </div>
+                    <input type="file" name="" id=""><br>
 
-            <div class="col-md-4">
-                <div class="card p-4">
-                    <h2>Resumo da compra</h2>
+                    <input type="submit" value="Enviar">
 
-                    <a href="" class="btn btn-primary-new">Efetuar pagamento</a>
-                </div>
+                </form>
             </div>
         </div>
     </div>
 
-    <script src="../JS/comportamentos.js"></script>
 </body>
 
 </html>

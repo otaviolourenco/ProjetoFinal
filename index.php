@@ -1,5 +1,11 @@
 <?php
 session_start();
+
+if ($_SESSION['NivelAcesso'] == 1) {
+    $admContent = "display: block;";
+} else {
+    $admContent = "display: none;";
+}
 ?>
 
 <!doctype html>
@@ -63,6 +69,8 @@ session_start();
                         }
                         ?>
                         <a href="pages/cart.php" class="px-4"><i class="fa-solid fa-cart-shopping"></i></a>
+
+                        <a href="pages/admPage.php" class="px-4" style="<?php echo $admContent; ?>"><i class="fa-solid fa-screwdriver-wrench"></i>Painel Adm.</a>
 
                         <a href="assets/logout.php" class="px-4" title="Sair"><i class="fa-solid fa-right-from-bracket"></i></a>
                     </div>
