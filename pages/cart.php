@@ -21,6 +21,9 @@ if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
         $produtosCarrinho[] = $produto;
     }
 }
+
+
+
 ?>
 
 <!doctype html>
@@ -96,37 +99,40 @@ if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
     <div class="container py-5">
         <div class="row">
             <div class="col-md">
-                <?php foreach ($produtosCarrinho as $row) : ?>
-                    <div class="d-flex flex-row justify-content-evenly my-2 py-4 rounded-3 table-responsive" style="background-color: var(--grey-color);">
-                        <table>
-                            <tr class="tabela-cart">
-                                <th> </th>
-                                <th>Produto</th>
-                                <th>Valor</th>
-                                <th>Quant.</th>
-                                <th>Total</th>
-                            </tr>
-
-                            <tr>
-                                <td><img src="../images/carousel/carousel.jpg" alt="" height="90rem" width="90rem"></td>
-
-                                <td><?php echo $row['NomeProduto']; ?></td>
-
-                                <td>€<?php echo $row['Preco']; ?></td>
-
-                                <td>
-                                    <form action="cart.php" method="POST">
-                                        <input class="input-quant" type="number" name="quantidade" id="" value="<?php echo $row['quantidade']; ?>">
-                                    </form>
-                                </td>
-
-                                <td>€<?php echo $row['Preco'] * $row['quantidade']; ?></td>
-
-                                <td><button class="btn btn-primary-new">Remover</button></td>
-                            </tr>
-                        </table>
+                <?php if (empty($produtosCarrinho)) : ?>
+                    <div class="text-center">
+                        <h2>O seu carrinho está vazio. Adicione alguns dos nossos incríveis produtos!</h2>
+                        <a href="../index.php#top-vendas">Ver produtos</a>
                     </div>
-                <?php endforeach; ?>
+                <?php else : ?>
+                    <?php $total = 0; ?>
+                    <?php foreach ($produtosCarrinho as $row) : ?>
+                        <div class="d-flex flex-row justify-content-evenly my-2 py-4 rounded-3 table-responsive" style="background-color: var(--grey-color);">
+                            <table id="tabela-carrinho">
+                                <tr class="tabela-cart">
+                                    <th> </th>
+                                    <th>Produto</th>
+                                    <th>Valor</th>
+                                    <th>Quant.</th>
+                                    <th>Total</th>
+                                </tr>
+
+                                <tr>
+                                    <td><img src="../images/<?php echo $row['FotoProduto']; ?>" alt="" height="90rem" width="90rem"></td>
+
+                                    <td><?php echo $row['NomeProduto']; ?></td>
+
+                                    <td>€<?php echo $row['Preco']; ?></td>
+
+                                    <td><?php echo $row['quantidade']; ?></td>
+
+                                    <td>€<?php echo $row['Preco'] * $row['quantidade']; ?></td>
+                                </tr>
+                            </table>
+                        </div>
+                        <?php $total += $row['Preco'] * $row['quantidade']; ?>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -138,7 +144,7 @@ if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
             <div class="col-sm rounded-3 p-4" style="background-color: var(--grey-color);">
                 <span class="tab-valor-total">
                     <h4>Subtotal: </h4>
-                    <h4>€5,89</h4>
+                    <h4><?php echo $total; ?></h4>
                 </span>
                 <hr>
 
@@ -150,13 +156,13 @@ if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
 
                 <span class="tab-valor-total">
                     <h4>Entrega: </h4>
-                    <h4>€0,00</h4>
+                    <h4>€<?php echo $entrega = 1.99; ?></h4>
                 </span>
                 <hr>
 
                 <span class="tab-valor-total mb-5">
                     <h2>Total: </h2>
-                    <h2>€0,00</h2>
+                    <h2>€<?php echo $total + $entrega; ?></h2>
                 </span>
 
                 <a href="checkout.php" class="btn btn-primary-new w-100 mb-3">Checkout</a><br>

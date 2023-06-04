@@ -367,10 +367,79 @@ input:valid {
   border: 0.15rem solid var(--primary-color);
 }
 
-.input-ck:focus ~ label,
-input:valid ~ label {
+.input-ck:focus ~ .label,
+.input:valid ~ .label {
   transform: translateY(-50%) scale(0.8);
   background-color: #ffffff;
   padding: 0 0.3em;
   color: var(--primary-color);
+}
+
+#form-add-produto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#form-add-produto > input {
+  border: none;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  width: 100%;
+}
+
+.drop-container {
+  background-color: #fff;
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
+  align-items: center;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  border-radius: 1rem;
+  border: 0.2rem dashed #239698;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out, border 0.2s ease-in-out;
+}
+
+.drop-container:hover {
+  background: #23969832;
+  border-color: rgba(17, 17, 17, 0.616);
+}
+
+.drop-container:hover .drop-title {
+  color: #222;
+}
+
+.drop-title {
+  color: #444;
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
+  transition: color 0.2s ease-in-out;
+}
+
+#file-input {
+  width: 350px;
+  max-width: 100%;
+  color: #444;
+  padding: 2px;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid rgba(8, 8, 8, 0.288);
+}
+
+#file-input::file-selector-button {
+  margin-right: 20px;
+  border: none;
+  background: var(--primary-color);
+  padding: 10px 20px;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+#file-input::file-selector-button:hover {
+  background: #155d5e;
 }

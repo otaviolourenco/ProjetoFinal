@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Tempo de geração: 24-Maio-2023 às 23:15
+-- Tempo de geração: 02-Jun-2023 às 11:09
 -- Versão do servidor: 10.4.27-MariaDB
 -- versão do PHP: 8.2.0
 
@@ -32,9 +32,18 @@ CREATE TABLE `Clientes` (
   `Nome` varchar(255) NOT NULL,
   `Email` varchar(255) NOT NULL,
   `Senha` varchar(255) NOT NULL,
-  `Morada` text NOT NULL,
-  `Tel` int(11) NOT NULL
+  `Morada` text DEFAULT NULL,
+  `Tel` int(11) DEFAULT NULL,
+  `NivelAcesso` int(11) NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+--
+-- Extraindo dados da tabela `Clientes`
+--
+
+INSERT INTO `Clientes` (`IDcliente`, `Nome`, `Email`, `Senha`, `Morada`, `Tel`, `NivelAcesso`) VALUES
+(1, 'José Maria', 'josemaria@gmail.com', '123456', 'Rua Bela Vista n7', 23456789, 0),
+(2, 'Cliente Teste', 'cliente@teste.com', '$2y$10$uSRciLafUSm8ruivtJr7huWMhmiImKpG8fm9leenoMSVRjlbaJHYu', NULL, NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -46,7 +55,6 @@ CREATE TABLE `Produtos` (
   `IDproduto` int(11) NOT NULL,
   `NomeProduto` varchar(255) NOT NULL,
   `Preco` decimal(5,2) DEFAULT NULL,
-  `PrecoForm` varchar(255) NOT NULL,
   `PrecoPromo` decimal(5,2) DEFAULT NULL,
   `QtEstoque` int(11) NOT NULL,
   `FotoProduto` text NOT NULL
@@ -56,9 +64,9 @@ CREATE TABLE `Produtos` (
 -- Extraindo dados da tabela `Produtos`
 --
 
-INSERT INTO `Produtos` (`IDproduto`, `NomeProduto`, `Preco`, `PrecoForm`, `PrecoPromo`, `QtEstoque`, `FotoProduto`) VALUES
-(1, 'Café 3 Corações', '4.20', '', '1.99', 30, ''),
-(2, 'Nescau 2.0', '8.00', '', '6.00', 30, '');
+INSERT INTO `Produtos` (`IDproduto`, `NomeProduto`, `Preco`, `PrecoPromo`, `QtEstoque`, `FotoProduto`) VALUES
+(1, 'Café 3 Corações', '4.20', '1.99', 30, ''),
+(2, 'Nescau 2.0', '7.98', '5.45', 30, '');
 
 -- --------------------------------------------------------
 
@@ -67,8 +75,7 @@ INSERT INTO `Produtos` (`IDproduto`, `NomeProduto`, `Preco`, `PrecoForm`, `Preco
 -- (Veja abaixo para a view atual)
 --
 CREATE TABLE `produtosview` (
-`IDproduto` int(11)
-,`NomeProduto` varchar(255)
+`NomeProduto` varchar(255)
 ,`Preco` decimal(5,2)
 ,`PrecoPromo` decimal(5,2)
 ,`QtEstoque` int(11)
@@ -78,25 +85,11 @@ CREATE TABLE `produtosview` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `Usuarios`
---
-
-CREATE TABLE `Usuarios` (
-  `IDuser` int(11) NOT NULL,
-  `Nome` varchar(255) NOT NULL,
-  `Email` varchar(255) NOT NULL,
-  `Senha` int(11) NOT NULL,
-  `NivelAcesso` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
--- --------------------------------------------------------
-
---
 -- Estrutura para vista `produtosview`
 --
 DROP TABLE IF EXISTS `produtosview`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `produtosview`  AS SELECT `produtos`.`IDproduto` AS `IDproduto`, `produtos`.`NomeProduto` AS `NomeProduto`, `produtos`.`Preco` AS `Preco`, `produtos`.`PrecoPromo` AS `PrecoPromo`, `produtos`.`QtEstoque` AS `QtEstoque`, `produtos`.`FotoProduto` AS `FotoProduto` FROM `produtos``produtos`  ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `produtosview`  AS SELECT `produtos`.`NomeProduto` AS `NomeProduto`, `produtos`.`Preco` AS `Preco`, `produtos`.`PrecoPromo` AS `PrecoPromo`, `produtos`.`QtEstoque` AS `QtEstoque`, `produtos`.`FotoProduto` AS `FotoProduto` FROM `produtos``produtos`  ;
 
 --
 -- Índices para tabelas despejadas
@@ -115,12 +108,6 @@ ALTER TABLE `Produtos`
   ADD PRIMARY KEY (`IDproduto`);
 
 --
--- Índices para tabela `Usuarios`
---
-ALTER TABLE `Usuarios`
-  ADD PRIMARY KEY (`IDuser`);
-
---
 -- AUTO_INCREMENT de tabelas despejadas
 --
 
@@ -128,19 +115,13 @@ ALTER TABLE `Usuarios`
 -- AUTO_INCREMENT de tabela `Clientes`
 --
 ALTER TABLE `Clientes`
-  MODIFY `IDcliente` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `IDcliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de tabela `Produtos`
 --
 ALTER TABLE `Produtos`
   MODIFY `IDproduto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT de tabela `Usuarios`
---
-ALTER TABLE `Usuarios`
-  MODIFY `IDuser` int(11) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -89,7 +89,7 @@ if (isset($error)) {
 
             <div class="login">
                 <form class="form" action="login.php" method="POST">
-                    <label for="chk" aria-hidden="true">Entrar</label>
+                    <label class="label" for="chk" aria-hidden="true">Entrar</label>
                     <input class="input" type="email" name="email-login" placeholder="Email" required="">
                     <input class="input" type="password" name="senha-login" placeholder="Senha" required="">
                     <button>Entrar</button>
@@ -98,7 +98,7 @@ if (isset($error)) {
 
             <div class="register">
                 <form class="form" action="login.php" method="POST">
-                    <label for="chk" aria-hidden="true">Registar</label>
+                    <label class="label" for="chk" aria-hidden="true">Registar</label>
                     <input class="input" type="text" name="nome-reg" placeholder="Nome completo" required="">
                     <input class="input" type="email" name="email-reg" placeholder="Email" required="">
                     <input class="input" type="password" name="senha-reg" placeholder="Senha" required="">

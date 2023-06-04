@@ -80,6 +80,20 @@ if ($_SESSION['NivelAcesso'] == 1) {
         </div>
     </div>
 
+    <!--Mensagem add carrinho sucesso-->
+    <div class="container">
+        <div class="row">
+            <div class="col-md">
+                <div class="d-flex justify-content-center fixed-top">
+                    <div id="msg-sucesso" style="display: none;" class="alert alert-success" role="alert">
+                        <p>O produto foi adicionado! <a href="pages/cart.php">Clique para ver o carrinho.</a> </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <!--Carousel-->
     <div id="carouselExampleRide" class="carousel slide" data-bs-ride="true">
         <div class="carousel-inner">
@@ -114,7 +128,7 @@ if ($_SESSION['NivelAcesso'] == 1) {
             <div class="card-container">
                 <div class="card-promo">
                     <div class="front-content">
-                        <img src="images/produtos/tapioca.jpg" alt="" class="img-desc">
+                        <img src="images/produtos/tapioca.jpeg" alt="" class="img-desc">
                         <img src="images/produtos/30off.png" alt="" class="tag-desc">
                     </div>
                     <div class="content">
@@ -131,7 +145,7 @@ if ($_SESSION['NivelAcesso'] == 1) {
             <div class="card-container">
                 <div class="card-promo">
                     <div class="front-content">
-                        <img src="images/produtos/pao-queijo.jpg" alt="" class="img-desc">
+                        <img src="images/produtos/pao-queijo.jpeg" alt="" class="img-desc">
                         <img src="images/produtos/40off.png" alt="" class="tag-desc">
                     </div>
                     <div class="content">
@@ -252,22 +266,22 @@ if ($_SESSION['NivelAcesso'] == 1) {
         <div class="row py-5">
             <h2>Itens</h2>
         </div>
-        <div class="d-flex justify-content-center fixed-top w-50">
-            <div id="msg-sucesso" style="display: none;" class="alert alert-success" role="alert">
-                <p>O produto foi adicionado ao carrinho</p>
-            </div>
-        </div>
+
         <div class="row">
             <div class="col-sm d-flex justify-content-evenly flex-wrap">
                 <?php
                 include('connect_db.php');
 
-                $sql = "SELECT * FROM Produtos";
+                $sql = "SELECT * FROM Produtos ORDER BY RAND() LIMIT 5";
                 $result = mysqli_query($conn, $sql);
 
                 while ($row = mysqli_fetch_assoc($result)) {
+
+                    if (!empty($row['FotoProduto'])) {
+                        $imgCaminho = $row['FotoProduto'];
+                    }
                     echo '<div class="card-top"> 
-                    <img src="images/carousel/carousel.jpg" class="card-img-top" alt="..." height="180">
+                    <img src="images/' . $imgCaminho . '"class="card-img-top" alt="..." height="180">
                     <div class="pt-3 px-3">
                         <ol class="rated-star">
                             <li><i class="fa-solid fa-star"></i></li>
@@ -278,8 +292,8 @@ if ($_SESSION['NivelAcesso'] == 1) {
                         </ol>';
                     echo "<p class=''>" . $row['NomeProduto'] . "</p>";
                     echo "<div class='d-flex flex-row justify-content-around align-items-center pb-2'>
-                            <p class='fs-2'>" . $row['PrecoPromo'] . "</p>";
-                    echo "<p class='text-danger text-decoration-line-through px-3'>" . $row['Preco'] . "</p>";
+                            <p class='fs-2'>" . $row['PrecoPromo'] . " €</p>";
+                    echo "<p class='text-danger text-decoration-line-through px-3'>" . $row['Preco'] . " €</p>";
                     echo "<form action='index.php' method='post'>";
                     echo "<input type='hidden' name='IDproduto' value=<" . $row['IDproduto'] . ">";
                     echo "<a href='adicionar_carrinho.php?idProduto=" . $row['IDproduto'] . "' class='btn-add-car float-end'><i class='fa-solid fa-cart-plus'></i></a>
@@ -407,7 +421,41 @@ if ($_SESSION['NivelAcesso'] == 1) {
         </div>
         <div class="row p-5 d-flex justify-content-center flex-wrap">
             <div class="col-md-8 d-flex justify-content-center flex-wrap">
-                <div class="card-top">
+                <?php
+                include('connect_db.php');
+
+                $sql = "SELECT * FROM Produtos ORDER BY RAND() LIMIT 6";
+                $result = mysqli_query($conn, $sql);
+
+                while ($row = mysqli_fetch_assoc($result)) {
+
+                    if (!empty($row['FotoProduto'])) {
+                        $imgCaminho = $row['FotoProduto'];
+                    }
+                    echo '<div class="card-top"> 
+                    <img src="images/' . $imgCaminho . '"class="card-img-top" alt="..." height="180">
+                    <div class="pt-3 px-3">
+                        <ol class="rated-star">
+                            <li><i class="fa-solid fa-star"></i></li>
+                            <li><i class="fa-solid fa-star"></i></li>
+                            <li><i class="fa-solid fa-star"></i></li>
+                            <li><i class="fa-solid fa-star"></i></li>
+                            <li><i class="fa-regular fa-star-half-stroke"></i></li>
+                        </ol>';
+                    echo "<p class=''>" . $row['NomeProduto'] . "</p>";
+                    echo "<div class='d-flex flex-row justify-content-around align-items-center pb-2'>
+                            <p class='fs-2'>" . $row['PrecoPromo'] . " €</p>";
+                    echo "<p class='text-danger text-decoration-line-through px-3'>" . $row['Preco'] . " €</p>";
+                    echo "<form action='index.php' method='post'>";
+                    echo "<input type='hidden' name='IDproduto' value=<" . $row['IDproduto'] . ">";
+                    echo "<a href='adicionar_carrinho.php?idProduto=" . $row['IDproduto'] . "' class='btn-add-car float-end'><i class='fa-solid fa-cart-plus'></i></a>
+                    </form>
+                        </div>
+                    </div>
+                </div>";
+                }
+                ?>
+                <!--<div class="card-top">
                     <img src="images/produtos/cafe3-cor.jpeg" class="card-img-top" alt="..." height="180">
                     <div class="pt-3 px-3">
                         <ol class="rated-star">
@@ -519,11 +567,22 @@ if ($_SESSION['NivelAcesso'] == 1) {
                             <button class="btn-add-car float-end"><i class="fa-solid fa-cart-plus"></i></button>
                         </div>
                     </div>
-                </div><br>
+                </div><br>-->
             </div>
 
             <div class="col-md-4">
-                <div class="card card-oferta text-center">
+                <?php
+                include('connect_db.php');
+
+                $sql = "SELECT * FROM Produtos WHERE IDproduto = 14";
+                $result = mysqli_query($conn, $sql);
+
+                while ($row = mysqli_fetch_assoc($result)) {
+
+                    if (!empty($row['FotoProduto'])) {
+                        $imgCaminho = $row['FotoProduto'];
+                    }
+                    echo '<div class="card card-oferta text-center">
                     <h3>Essa oferta acaba em:</h3>
                     <div id="countdown" class="">
                         <ul>
@@ -531,27 +590,27 @@ if ($_SESSION['NivelAcesso'] == 1) {
                             <li class="count-border" id="horas"></li>
                             <li class="count-border" id="minutos"></li>
                             <li class="count-border" id="segundos"></li>
-                        </ul>
-                        <img src="images/carousel/carousel.jpg" alt="" width="100%">
-                        <div>
-                            <ol class="rated-star d-flex justify-content-center p-3" style="font-size: 2.6rem;">
-                                <li><i class="fa-solid fa-star"></i></li>
-                                <li><i class="fa-solid fa-star"></i></li>
-                                <li><i class="fa-solid fa-star"></i></li>
-                                <li><i class="fa-solid fa-star"></i></li>
-                                <li><i class="fa-regular fa-star-half-stroke"></i></li>
-                            </ol>
-                            <p class="">Nome produto</p>
-                            <div class="">
-                                <p class="text-danger text-decoration-line-through m-0" style="font-size: 2rem;">€7.50</p>
-                                <p style="font-size: 4rem;">€6.50</p>
-                            </div>
+                        </ul> 
+                    <img src="images/' . $imgCaminho . '"alt="..." width="100%">
+                    <div>
+                        <ol class="rated-star d-flex justify-content-center p-3" style="font-size: 2.6rem;">
+                            <li><i class="fa-solid fa-star"></i></li>
+                            <li><i class="fa-solid fa-star"></i></li>
+                            <li><i class="fa-solid fa-star"></i></li>
+                            <li><i class="fa-solid fa-star"></i></li>
+                            <li><i class="fa-regular fa-star-half-stroke"></i></li>
+                        </ol>';
+                    echo "<p class=''>" . $row['NomeProduto'] . "</p>";
+                    echo "<div class=''>
+                            <p class='text-danger text-decoration-line-through m-0' style='font-size: 2rem;'>" . $row['PrecoPromo'] . " €</p>";
+                    echo "<p style='font-size: 4rem;'>" . $row['Preco'] . " €</p>";
+                    echo "<input type='hidden' name='IDproduto' value=<" . $row['IDproduto'] . ">";
+                    echo "<a href='adicionar_carrinho.php?idProduto=" . $row['IDproduto'] . "' class='btn btn-add-car btn-primary-new mb-4 w-100'>Adicionar ao carrinho</a>
                         </div>
-
-                        <p>Ainda restam 30 em estoque</p>
-                        <a href="" class="btn btn-primary-new p-3 mb-4 w-100">Adicionar ao carrinho</a>
                     </div>
-                </div>
+                </div>";
+                }
+                ?>
             </div>
         </div>
     </div>
@@ -586,7 +645,7 @@ if ($_SESSION['NivelAcesso'] == 1) {
             <div class="col-md-4 m-2 p-5 form-pgmto d-flex justify-content-center align-items-center card sombra-efeito">
                 <div class="row">
                     <div class="text-center">
-                        <h2>Desfrute do melhor sem sair do conforto do seu lar.</h2>
+                        <h2>Mais segurança e praticidade para você!</h2>
                         <p>Aceitamos os principais meios de pagamentos</p>
                         <img src="images/diversos/bandeiras.png" alt="Pagamentos aceites">
                     </div>

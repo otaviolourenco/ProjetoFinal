@@ -82,19 +82,24 @@ if ($_SESSION['NivelAcesso'] == 1) {
     <!--Administrativo dos produtos-->
     <div class="container d-flex justify-content-center align-items-center">
         <div class="row mt-5">
-            <div class="col-md d-flex justify-content-center align-items-center p-5" style="background-color: var(--grey-color)">
-                <form action="">
-                    <input type="text" placeholder="Nome do produto"><br>
+            <div class="col-md d-flex flex-column justify-content-center align-items-center rounded-3 p-5" style="background-color: var(--grey-color)">
+                <h2 class="mb-5">Adicione aqui os produtos</h2>
+                <form action="../images/inserir_produtos.php" method="POST" enctype="multipart/form-data" id="form-add-produto">
+                    <input type="text" name="nomeProduto" placeholder="Nome do produto" required><br>
 
-                    <input type="text" placeholder="Preço"><br>
+                    <input type="text" name="preco" placeholder="Preço" required><br>
 
-                    <input type="text" placeholder="Preço Promocional"><br>
+                    <input type="text" name="precoPromo" placeholder="Preço Promocional"><br>
 
-                    <input type="number" name="" id="" placeholder="Qtd. Estoque"><br>
+                    <input type="number" name="qtEstoque" id="" placeholder="Qtd. Estoque" required><br>
 
-                    <input type="file" name="" id=""><br>
+                    <label for="file-input" class="drop-container">
+                        <span class="drop-title">Arraste uma foto</span>
+                        ou
+                        <input type="file" name="foto_produto" accept="image/*" required="" id="file-input" required>
+                    </label>
 
-                    <input type="submit" value="Enviar">
+                    <input class="btn btn-primary-new w-100" type="submit" value="Enviar">
 
                 </form>
             </div>

@@ -19,7 +19,7 @@ if (isset($_POST['nome']) && isset($_POST['email']) && isset($_POST['senha'])) {
         $query = "INSERT INTO Clientes (Nome, Email, Senha) VALUES ('$nome', '$email', '$senha')";
         if ($conn->query($query)) {
             // Redireciona para a página de login
-            echo '<script>alert("Você se registou, faça login!"); window.location.href = "./login.php"; </script>';
+            echo '<script>alert("Você se registou, faça login!"); window.location.href = "login.php"; </script>';
             exit();
         } else {
             echo "Erro ao registrar usuário: " . $conn->error;
