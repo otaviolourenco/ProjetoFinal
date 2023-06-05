@@ -105,7 +105,10 @@ if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
                         <a href="../index.php#top-vendas">Ver produtos</a>
                     </div>
                 <?php else : ?>
-                    <?php $total = 0; ?>
+                    <?php
+                    $total = 0;
+                    $desconto = 0;
+                    ?>
                     <?php foreach ($produtosCarrinho as $row) : ?>
                         <div class="d-flex flex-row justify-content-evenly my-2 py-4 rounded-3 table-responsive" style="background-color: var(--grey-color);">
                             <table id="tabela-carrinho">
@@ -122,15 +125,18 @@ if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
 
                                     <td><?php echo $row['NomeProduto']; ?></td>
 
-                                    <td>€<?php echo $row['Preco']; ?></td>
+                                    <td>€<?php echo $row['PrecoPromo']; ?></td>
 
                                     <td><?php echo $row['quantidade']; ?></td>
 
-                                    <td>€<?php echo $row['Preco'] * $row['quantidade']; ?></td>
+                                    <td>€<?php echo $row['PrecoPromo'] * $row['quantidade']; ?></td>
                                 </tr>
                             </table>
                         </div>
-                        <?php $total += $row['Preco'] * $row['quantidade']; ?>
+                        <?php
+                        $total += $row['PrecoPromo'] * $row['quantidade'];
+                        $desconto += $row['Preco'] - $row['PrecoPromo'];
+                        ?>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
@@ -144,26 +150,27 @@ if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
             <div class="col-sm rounded-3 p-4" style="background-color: var(--grey-color);">
                 <span class="tab-valor-total">
                     <h4>Subtotal: </h4>
-                    <h4><?php echo $total; ?></h4>
-                </span>
-                <hr>
-
-                <span class="tab-valor-total">
-                    <h4>Desconto: </h4>
-                    <h4>€0,00</h4>
+                    <h4><?php echo $total; ?>€</h4>
                 </span>
                 <hr>
 
                 <span class="tab-valor-total">
                     <h4>Entrega: </h4>
-                    <h4>€<?php echo $entrega = 1.99; ?></h4>
+                    <h4><?php echo $entrega = 1.99; ?>€</h4>
+                </span>
+                <hr>
+
+                <span class="tab-valor-total">
+                    <h2>Total: </h2>
+                    <h2><?php echo $total + $entrega; ?>€</h2>
                 </span>
                 <hr>
 
                 <span class="tab-valor-total mb-5">
-                    <h2>Total: </h2>
-                    <h2>€<?php echo $total + $entrega; ?></h2>
+                    <h3>Você economizou nessa compra: </h3>
+                    <h3><?php echo $desconto; ?>€</h3>
                 </span>
+
 
                 <a href="checkout.php" class="btn btn-primary-new w-100 mb-3">Checkout</a><br>
                 <a href="../index.php" class="btn btn-primary-new w-100">Continuar a comprar</a>

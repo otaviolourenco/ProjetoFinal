@@ -19,5 +19,9 @@ function adicionarAoCarrinho($idProduto)
     }
 }
 
+foreach ($_SESSION['carrinho'] as $idProduto => $quantidade) {
+    setcookie('carrinho[' . $idProduto . ']', $quantidade, time() + (86400 * 30), "/"); // cookie válido por 30 dias
+}
+
 http_response_code(204);
 exit;

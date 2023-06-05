@@ -8,6 +8,26 @@ if (!isset($_SESSION['IDcliente'])) {
 } else {
     echo '<script>console.log("Você está logado como ' . $_SESSION["Nome"] . '");</script>';
 }
+
+include('../connect_db.php');
+function obterProduto($conn, $idProduto)
+{
+    $query = "SELECT * FROM Produtos WHERE IDproduto = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param('i', $idProduto);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_assoc();
+}
+
+
+if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
+    foreach ($_SESSION['carrinho'] as $idProduto => $quantidade) {
+        $produto = obterProduto($conn, $idProduto);
+        $produto['quantidade'] = $quantidade;
+        $produtosCarrinho[] = $produto;
+    }
+}
 ?>
 
 <!doctype html>
@@ -115,9 +135,46 @@ if (!isset($_SESSION['IDcliente'])) {
 
             <div class="col-md-4">
                 <div class="card p-4">
-                    <h2>Resumo da compra</h2>
+                    <h2 class="py-3">Resumo da compra</h2>
+                    <?php if (empty($produtosCarrinho)) : ?>
+                        <div class="text-center">
+                            <h2>O seu carrinho está vazio. Adicione alguns dos nossos incríveis produtos!</h2>
+                            <a href="../index.php#top-vendas">Ver produtos</a>
+                        </div>
+                    <?php else : ?>
+                        <?php $total2 = 0; ?>
+                        <table class="table lista-checkout">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Produto</th>
+                                    <th scope="col">Preço</th>
+                                    <th scope="col">Qtd</th>
+                                    <th scope="col">Total</th>
+                                </tr>
+                            </thead>
 
-                    <a href="" class="btn btn-primary-new">Efetuar pagamento</a>
+                            <?php foreach ($produtosCarrinho as $row) : ?>
+                                <tbody>
+                                    <tr>
+                                        <td class="py-3"><?php echo $row['NomeProduto']; ?></td>
+                                        <td class="py-3"><?php echo $row['PrecoPromo']; ?></td>
+                                        <td class="py-3"><?php echo $row['quantidade']; ?></td>
+                                        <td class="py-3"><?php echo $row['PrecoPromo'] * $row['quantidade']; ?></td>
+                                    </tr>
+                                </tbody>
+                                <?php $total2 += $row['PrecoPromo'] * $row['quantidade']; ?>
+                            <?php endforeach; ?>
+                        </table>
+                        <div class="d-flex justify-content-between px-3">
+                            <h4>Entrega:</h4>
+                            <h4><?php echo $entrega = 1.99; ?>€</h4>
+                        </div>
+                        <div class="d-flex justify-content-between p-3">
+                            <h2>Total:</h2>
+                            <h2><?php echo $total2 + $entrega; ?>€</h2>
+                        </div>
+                        <a href="" class="btn btn-primary-new">Efetuar pagamento</a>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

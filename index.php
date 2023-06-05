@@ -1,11 +1,20 @@
 <?php
 session_start();
 
+$_SESSION['nome'] = $nome;
+$_SESSION['email'] = $email;
+
 if ($_SESSION['NivelAcesso'] == 1) {
     $admContent = "display: block;";
 } else {
     $admContent = "display: none;";
 }
+
+foreach ($produtosCarrinho as $produto) {
+    setcookie('carrinho[' . $produto['IDproduto'] . ']', $produto['quantidade'], time() + (86400 * 30), "/"); // cookie válido por 30 dias
+}
+
+
 ?>
 
 <!doctype html>
@@ -303,82 +312,6 @@ if ($_SESSION['NivelAcesso'] == 1) {
                 </div>";
                 }
                 ?>
-
-                <!--<div class="card-top">
-                    <img src="images/carousel/carousel.jpg" class="card-img-top" alt="..." height="180">
-                    <div class="pt-3 px-3">
-                        <ol class="rated-star">
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-regular fa-star-half-stroke"></i></li>
-                        </ol>
-                        <p class="">Nome produto</p>
-                        <div class="d-flex flex-row justify-content-around align-items-center pb-2">
-                            <p class="fs-2">€6.50</p>
-                            <p class="text-danger text-decoration-line-through px-3">€7.50</p>
-                            <button class="btn-add-car float-end"><i class="fa-solid fa-cart-plus"></i></button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-top">
-                    <img src="images/carousel/carousel.jpg" class="card-img-top" alt="..." height="180">
-                    <div class="pt-3 px-3">
-                        <ol class="rated-star">
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-regular fa-star-half-stroke"></i></li>
-                        </ol>
-                        <p class="">Nome produto</p>
-                        <div class="d-flex flex-row justify-content-around align-items-center pb-2">
-                            <p class="fs-2">€6.50</p>
-                            <p class="text-danger text-decoration-line-through px-3">€7.50</p>
-                            <button class="btn-add-car float-end"><i class="fa-solid fa-cart-plus"></i></button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-top">
-                    <img src="images/carousel/carousel.jpg" class="card-img-top" alt="..." height="180">
-                    <div class="pt-3 px-3">
-                        <ol class="rated-star">
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-regular fa-star-half-stroke"></i></li>
-                        </ol>
-                        <p class="">Nome produto</p>
-                        <div class="d-flex flex-row justify-content-around align-items-center pb-2">
-                            <p class="fs-2">€6.50</p>
-                            <p class="text-danger text-decoration-line-through px-3">€7.50</p>
-                            <button class="btn-add-car float-end"><i class="fa-solid fa-cart-plus"></i></button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-top">
-                    <img src="images/carousel/carousel.jpg" class="card-img-top" alt="..." height="180">
-                    <div class="pt-3 px-3">
-                        <ol class="rated-star">
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-regular fa-star-half-stroke"></i></li>
-                        </ol>
-                        <p class="">Nome produto</p>
-                        <div class="d-flex flex-row justify-content-around align-items-center pb-2">
-                            <p class="fs-2">€6.50</p>
-                            <p class="text-danger text-decoration-line-through px-3">€7.50</p>
-                            <button class="btn-add-car float-end"><i class="fa-solid fa-cart-plus"></i></button>
-                        </div>
-                    </div>
-                </div>-->
             </div>
         </div>
     </div>
@@ -419,7 +352,7 @@ if ($_SESSION['NivelAcesso'] == 1) {
         <div class="row">
             <h2>Mais vendidos</h2>
         </div>
-        <div class="row p-5 d-flex justify-content-center flex-wrap">
+        <div class="row d-flex flex-wrap">
             <div class="col-md-8 d-flex justify-content-center flex-wrap">
                 <?php
                 include('connect_db.php');
@@ -455,120 +388,8 @@ if ($_SESSION['NivelAcesso'] == 1) {
                 </div>";
                 }
                 ?>
-                <!--<div class="card-top">
-                    <img src="images/produtos/cafe3-cor.jpeg" class="card-img-top" alt="..." height="180">
-                    <div class="pt-3 px-3">
-                        <ol class="rated-star">
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-regular fa-star-half-stroke"></i></li>
-                        </ol>
-                        <p class="">Café 3 Corações</p>
-                        <div class="d-flex flex-row justify-content-around align-items-center pb-2">
-                            <p class="text-danger text-decoration-line-through px-3">€2.75</p>
-                            <p class="fs-2">€1.50</p>
-                            <button class="btn-add-car float-end"><i class="fa-solid fa-cart-plus"></i></button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-top">
-                    <img src="images/produtos/nescau.jpeg" class="card-img-top" alt="..." height="180">
-                    <div class="pt-3 px-3">
-                        <ol class="rated-star">
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-regular fa-star-half-stroke"></i></li>
-                        </ol>
-                        <p class="">Café 3 Corações</p>
-                        <div class="d-flex flex-row justify-content-around align-items-center pb-2">
-                            <p class="text-danger text-decoration-line-through px-3">€2.75</p>
-                            <p class="fs-2">€1.50</p>
-                            <button class="btn-add-car float-end"><i class="fa-solid fa-cart-plus"></i></button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-top">
-                    <img src="images/carousel/carousel.jpg" class="card-img-top" alt="..." height="180">
-                    <div class="pt-3 px-3">
-                        <ol class="rated-star">
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-regular fa-star-half-stroke"></i></li>
-                        </ol>
-                        <p class="">Nome produto</p>
-                        <div class="d-flex flex-row justify-content-around align-items-center">
-                            <p class="text-danger text-decoration-line-through px-3">€7.50</p>
-                            <p class="fs-2">€6.50</p>
-                            <button class="btn-add-car float-end"><i class="fa-solid fa-cart-plus"></i></button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-top">
-                    <img src="images/carousel/carousel.jpg" class="card-img-top" alt="..." height="180">
-                    <div class="pt-3 px-3">
-                        <ol class="rated-star">
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-regular fa-star-half-stroke"></i></li>
-                        </ol>
-                        <p class="">Nome produto</p>
-                        <div class="d-flex flex-row justify-content-around align-items-center">
-                            <p class="text-danger text-decoration-line-through mt-3">€7.50</p>
-                            <p class="fs-2">€6.50</p>
-                            <button class="btn-add-car float-end"><i class="fa-solid fa-cart-plus"></i></button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-top">
-                    <img src="images/carousel/carousel.jpg" class="card-img-top" alt="..." height="180">
-                    <div class="pt-3 px-3">
-                        <ol class="rated-star">
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-regular fa-star-half-stroke"></i></li>
-                        </ol>
-                        <p class="">Nome produto</p>
-                        <div class="d-flex flex-row justify-content-around align-items-center">
-                            <p class="text-danger text-decoration-line-through px-3">€7.50</p>
-                            <p class="fs-2">€6.50</p>
-                            <button class="btn-add-car float-end"><i class="fa-solid fa-cart-plus"></i></button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card-top">
-                    <img src="images/carousel/carousel.jpg" class="card-img-top" alt="..." height="180">
-                    <div class="pt-3 px-3">
-                        <ol class="rated-star">
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-solid fa-star"></i></li>
-                            <li><i class="fa-regular fa-star-half-stroke"></i></li>
-                        </ol>
-                        <p class="">Nome produto</p>
-                        <div class="d-flex flex-row justify-content-around align-items-center">
-                            <p class="text-danger text-decoration-line-through px-3">€7.50</p>
-                            <p class="fs-2">€6.50</p>
-                            <button class="btn-add-car float-end"><i class="fa-solid fa-cart-plus"></i></button>
-                        </div>
-                    </div>
-                </div><br>-->
             </div>
+
 
             <div class="col-md-4">
                 <?php
@@ -583,15 +404,15 @@ if ($_SESSION['NivelAcesso'] == 1) {
                         $imgCaminho = $row['FotoProduto'];
                     }
                     echo '<div class="card card-oferta text-center">
-                    <h3>Essa oferta acaba em:</h3>
-                    <div id="countdown" class="">
+                        <h3>Essa oferta acaba em:</h3>
+                        <div id="countdown" class="">
                         <ul>
                             <li class="count-border" id="dias"></li>
                             <li class="count-border" id="horas"></li>
                             <li class="count-border" id="minutos"></li>
                             <li class="count-border" id="segundos"></li>
                         </ul> 
-                    <img src="images/' . $imgCaminho . '"alt="..." width="100%">
+                        <img src="images/' . $imgCaminho . '"alt="..." width="100%">
                     <div>
                         <ol class="rated-star d-flex justify-content-center p-3" style="font-size: 2.6rem;">
                             <li><i class="fa-solid fa-star"></i></li>
@@ -613,6 +434,7 @@ if ($_SESSION['NivelAcesso'] == 1) {
                 ?>
             </div>
         </div>
+    </div>
     </div>
 
     <!--CTA-->
@@ -717,7 +539,7 @@ if ($_SESSION['NivelAcesso'] == 1) {
                             // Oculte a mensagem após 3 segundos
                             setTimeout(() => {
                                 divMensagem.style.display = 'none';
-                            }, 3000);
+                            }, 4000);
                         } else {
                             console.error('Erro ao adicionar produto ao carrinho');
                         }
