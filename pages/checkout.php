@@ -1,32 +1,12 @@
 <?php
-//verifica se o usuário está logado
 session_start();
+include('../assets/functions.php');
 
-if (!isset($_SESSION['IDcliente'])) {
+if (!isset($_SESSION['IDuser'])) {
     echo '<script>alert("Por favor, faça o login!"); window.location.href = "login.php";</script>';
     exit();
 } else {
     echo '<script>console.log("Você está logado como ' . $_SESSION["Nome"] . '");</script>';
-}
-
-include('../connect_db.php');
-function obterProduto($conn, $idProduto)
-{
-    $query = "SELECT * FROM Produtos WHERE IDproduto = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param('i', $idProduto);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    return $result->fetch_assoc();
-}
-
-
-if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
-    foreach ($_SESSION['carrinho'] as $idProduto => $quantidade) {
-        $produto = obterProduto($conn, $idProduto);
-        $produto['quantidade'] = $quantidade;
-        $produtosCarrinho[] = $produto;
-    }
 }
 ?>
 
@@ -48,11 +28,13 @@ if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
     <link rel="stylesheet" href="../css/style.css">
 
     <script src="https://kit.fontawesome.com/c6aa19193c.js" crossorigin="anonymous"></script>
+
+    <script src="../JS/jquery.js"></script>
 </head>
 
 <body>
     <!--Sob menu-->
-    <div class="container-fluid sob-menu fixed-top">
+    <div class="container-fluid sob-menu fixed-top d-none d-sm-block">
         <div class="row">
             <div class="col-sm " style="background-color: var(--primary-color);">
                 <div class="d-flex justify-content-around align-items-center">
@@ -71,8 +53,48 @@ if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
         </div>
     </div>
 
+    <!--Mobile sob menu-->
+    <div class="navbar-area d-block d-sm-none fixed-top">
+        <div class="container">
+            <nav class="site-navbar">
+                <!-- site logo -->
+                <div class="logo"><img src="../images/diversos/logo-nome.png" alt="" height="50"></div>
+
+                <!-- site menu/nav -->
+                <ul>
+                    <div class="my-5">
+                        <input class="input-search rounded-start-3" type="search" name="" id="">
+                        <button class="btn-yellow rounded-end-3">Pesquisar</button>
+                    </div>
+                    <?php
+                    session_start();
+                    if (isset($_SESSION['IDuser'])) {
+                        echo '<li><a class="text-white"> Olá, ' . $_SESSION['Nome'] . '!</a></li>';
+                    } else {
+                        echo '<a href="pages/login.php"><button class="btn btn-primary-new mt-5"><i class="fa-solid fa-user"></i> Entrar</button></a>';
+                    }
+                    ?>
+
+                    <li><a href="pages/admPage.php" class="" style="<?php echo $admContent; ?>"><i class="fa-solid fa-screwdriver-wrench"></i> Painel Adm.</a></li>
+
+                    <?php
+                    session_start();
+                    if (isset($_SESSION['IDuser'])) {
+                        echo '<li><a href="../assets/logout.php" class="" title="Sair"><i class="fa-solid fa-right-from-bracket"></i>Sair</a></li>';
+                    }
+                    ?>
+                </ul>
+
+                <!-- nav-toggler for mobile version only -->
+                <button class="nav-toggler">
+                    <span></span>
+                </button>
+            </nav>
+        </div>
+    </div>
+
     <!--Breadcrumb-->
-    <div class="container-fluid" style="padding-top: 7.62rem;">
+    <div class="container-fluid mobile-bc" style="padding-top: 7.62rem;">
         <div class="row">
             <div class="col-sm d-flex justify-content-around align-items-center" style="background-color: var(--grey-color); height: 5rem;">
                 <nav style="--bs-breadcrumb-divider: '>';" aria-label="breadcrumb">
@@ -87,13 +109,16 @@ if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
                     <div class="float-end me-5 d-flex flex-row justify-content-evenly">
                         <?php
                         session_start();
-                        if (isset($_SESSION['IDcliente'])) {
-                            echo '<p> Olá, ' . $_SESSION['Nome'] . '!</p>';
+                        if (isset($_SESSION['IDuser'])) {
+                            echo '<p class="d-none d-sm-block"> Olá, ' . $_SESSION['Nome'] . '!</p>';
                         } else {
-                            echo '<a href="pages/login.php"><button class="btn btn-primary-new"><i class="fa-solid fa-user"></i> Entrar</button></a>';
+                            echo '<a href="../login.php"><button class="btn btn-primary-new d-none d-sm-block"><i class="fa-solid fa-user"></i> Entrar</button></a>';
+                        }
+
+                        if (isset($_SESSION['IDuser'])) {
+                            echo '<a href="../assets/logout.php" class="link px-4 d-none d-sm-block" title="Sair"><i class="fa-solid fa-right-from-bracket"></i>Sair</a>';
                         }
                         ?>
-                        <a href="../assets/logout.php" class="px-4 pt-2" title="Sair"><i class="fa-solid fa-right-from-bracket"></i></a>
                     </div>
                 </div>
             </div>
@@ -101,84 +126,128 @@ if (isset($_SESSION['carrinho']) && !empty($_SESSION['carrinho'])) {
     </div>
 
     <!--Infor entrega-->
-    <div class="container py-5">
-        <div class="row">
-            <h2>Entrega</h2>
-        </div>
+    <div class="window-full">
+        <div class="container py-5">
+            <div class="row d-flex justify-content-between">
+                <div class="col-md-8">
+                    <div class="card p-4 d-flex justify-content-center">
+                        <h2>Entrega</h2>
+                        <div class="p-5 d-flex justify-content-center">
+                            <form action="" method="post" class="formEntrega">
+                                <label for="nome">Nome completo</label>
+                                <input type="text" name="Nome" id="nome" placeholder="Nome completo" value="<?php echo $nome; ?>">
 
-        <div class="row d-flex justify-content-between">
-            <div class="col-md-8">
-                <div class="card p-4 d-flex justify-content-center">
-                    <form action="" method="post">
-                        <div class="input-group mb-4">
-                            <input required="" type="text" name="text" autocomplete="off" class="input-ck">
-                            <label class="user-label">Primeiro nome</label>
-                        </div>
+                                <label for="dataNasci">Data de nascimento</label>
+                                <input type="date" name="dataNasci" id="dataNasci" value="<?php echo $dataNasc; ?>">
 
-                        <div class="input-group mb-4">
-                            <input required="" type="text" name="text" autocomplete="off" class="input-ck">
-                            <label class="user-label">Último nome</label>
-                        </div>
+                                <label for="tel">Telefone</label>
+                                <input type="number" name="Contacto" id="tel" placeholder="912 345 678" value="<?php echo $tel; ?>">
 
-                        <div class="input-group mb-4">
-                            <input required="" type="text" name="text" autocomplete="off" class="input-ck">
-                            <label class="user-label">Morada</label>
-                        </div>
+                                <label for="morada">Morada</label>
+                                <input type="text" name="Morada" placeholder="Morada" value="<?php echo $morada; ?>">
 
-                        <div class="input-group mb-4">
-                            <input required="" id="codigoPostalInput" type="text" name="text" autocomplete="off" maxlength="8" class="input-ck" oninput="formatarCodigoPostal(this)">
-                            <label class="user-label">Código postal</label>
+                                <label for="cp">Código Postal</label>
+                                <input type="text" name="CodPostal" placeholder="Código Postal" value="<?php echo $Postal; ?>" onkeyup="formatarCodigoPostal(this)">
+
+                                <input type="submit" value="Salvar" class="btn btn-primary-new">
+                            </form>
                         </div>
-                    </form>
+                    </div>
                 </div>
-            </div>
 
-            <div class="col-md-4">
-                <div class="card p-4">
-                    <h2 class="py-3">Resumo da compra</h2>
-                    <?php if (empty($produtosCarrinho)) : ?>
-                        <div class="text-center">
-                            <h2>O seu carrinho está vazio. Adicione alguns dos nossos incríveis produtos!</h2>
-                            <a href="../index.php#top-vendas">Ver produtos</a>
-                        </div>
-                    <?php else : ?>
-                        <?php $total2 = 0; ?>
-                        <table class="table lista-checkout">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Produto</th>
-                                    <th scope="col">Preço</th>
-                                    <th scope="col">Qtd</th>
-                                    <th scope="col">Total</th>
-                                </tr>
-                            </thead>
-
-                            <?php foreach ($produtosCarrinho as $row) : ?>
-                                <tbody>
+                <div class="col-md-4">
+                    <div class="card p-4">
+                        <h2 class="py-3">Resumo da compra</h2>
+                        <?php if (empty($produtosCarrinho)) : ?>
+                            <div class="text-center">
+                                <h2>O seu carrinho está vazio. Adicione alguns dos nossos incríveis produtos!</h2>
+                                <a href="../index.php#top-vendas">Ver produtos</a>
+                            </div>
+                        <?php else : ?>
+                            <?php $total2 = 0; ?>
+                            <table class="table lista-checkout">
+                                <thead>
                                     <tr>
-                                        <td class="py-3"><?php echo $row['NomeProduto']; ?></td>
-                                        <td class="py-3"><?php echo $row['PrecoPromo']; ?></td>
-                                        <td class="py-3"><?php echo $row['quantidade']; ?></td>
-                                        <td class="py-3"><?php echo $row['PrecoPromo'] * $row['quantidade']; ?></td>
+                                        <th scope="col">Produto</th>
+                                        <th scope="col">Preço</th>
+                                        <th scope="col">Qtd</th>
+                                        <th scope="col">Total</th>
                                     </tr>
+                                </thead>
+                                <tbody>
+                                    <?php foreach ($produtosCarrinho as $row) : ?>
+                                        <?php
+                                        $nomeProduto = htmlspecialchars($row['NomeProduto']);
+                                        $precoPromo = $row['PrecoPromo'];
+                                        $quantidade = intval($row['quantidade']);
+                                        $totalLinha = $precoPromo * $quantidade;
+                                        $total2 += $precoPromo * $quantidade;
+                                        ?>
+                                        <tr>
+                                            <td class="py-3"><?php echo $nomeProduto; ?></td>
+                                            <td class="py-3"><?php echo $precoPromo; ?>€</td>
+                                            <td class="py-3"><?php echo $quantidade; ?></td>
+                                            <td class="py-3"><?php echo $totalLinha; ?>€</td>
+                                        </tr>
+                                    <?php endforeach; ?>
                                 </tbody>
-                                <?php $total2 += $row['PrecoPromo'] * $row['quantidade']; ?>
-                            <?php endforeach; ?>
-                        </table>
-                        <div class="d-flex justify-content-between px-3">
-                            <h4>Entrega:</h4>
-                            <h4><?php echo $entrega = 1.99; ?>€</h4>
-                        </div>
-                        <div class="d-flex justify-content-between p-3">
-                            <h2>Total:</h2>
-                            <h2><?php echo $total2 + $entrega; ?>€</h2>
-                        </div>
-                        <a href="" class="btn btn-primary-new">Efetuar pagamento</a>
-                    <?php endif; ?>
+                            </table>
+                            <div class="d-flex justify-content-between px-3">
+                                <h4>Entrega:</h4>
+                                <h4><?php echo $entrega = 1.99; ?>€</h4>
+                            </div>
+                            <div class="d-flex justify-content-between p-3">
+                                <h2>Total:</h2>
+                                <h2><?php echo number_format($total2 + $entrega, 2); ?>€</h2>
+                            </div>
+                            <form action="../encomendar.php" method="post">
+                                <input type="hidden" name="Total" value="<?php echo $total2 + $entrega; ?>">
+                                <button type="submit" class="btn btn-primary-new w-100">Efetuar encomenda</button>
+                            </form>
+                        <?php endif; ?>
+                    </div>
                 </div>
+
             </div>
         </div>
     </div>
+
+    <!--Scroll to top-->
+    <button onclick="topFunction()" id="topBtn" title="Go to top"><i class="fa-solid fa-arrow-up"></i></button>
+
+    <!--Sob footer-->
+    <div class="container-fluid pt-5 text-white" style="background-color: var(--soft-black);">
+        <div class="row d-flex justify-content-between">
+            <div class="col-sm-4 p-5">
+                <h2>Sabores do Brasil.</h2>
+                <p>Nós nos dedicamos a trazer a autêntica experiência brasileira diretamente para a sua casa em Portugal, permitindo que você saboreie os irresistíveis sabores e/ou conheça a rica cultura do Brasil. Aproveite o nosso serviço de entrega e desfrute do melhor sem sair do conforto do seu lar.</p>
+                <div class="redes-sociais"></div>
+            </div>
+
+            <div class="col-sm-4 p-5">
+                <h3>Loja física</h3>
+                <p>Morada: rua Dom Joao VI, n35, loja 4, Lisboa</p>
+                <p>tel: 213 145 221</p>
+                <p>Email: <a href="mailto:email@email.com" class="text-email">apoiocliente@saboresdobrasil.com</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!--Footer-->
+    <footer class="container-fluid d-flex justify-content-between align-items-center" style="background-color: var(--black-color); height: 15rem;">
+        <div class="row px-5 w-100">
+
+            <div class="col-sm-6 footer d-flex justify-content-center align-items-center">
+                <p style="color: var(--white-color);">Desenvolvido por Otávio Lourenço</p>
+            </div>
+
+            <div class="col-sm-6 d-flex justify-content-center align-items-center">
+                <div class="pgmto-metodos float-end">
+                    <img src="../images/diversos/site-seguro.png" height="60rem" alt="">
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script src="../JS/comportamentos.js"></script>
 </body>

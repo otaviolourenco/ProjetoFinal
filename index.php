@@ -10,11 +10,6 @@ if ($_SESSION['NivelAcesso'] == 1) {
     $admContent = "display: none;";
 }
 
-foreach ($produtosCarrinho as $produto) {
-    setcookie('carrinho[' . $produto['IDproduto'] . ']', $produto['quantidade'], time() + (86400 * 30), "/"); // cookie válido por 30 dias
-}
-
-
 ?>
 
 <!doctype html>
@@ -35,11 +30,13 @@ foreach ($produtosCarrinho as $produto) {
     <link rel="stylesheet" href="css/style.css">
 
     <script src="https://kit.fontawesome.com/c6aa19193c.js" crossorigin="anonymous"></script>
+
+    <script src="JS/jquery.js"></script>
 </head>
 
 <body>
     <!--Sob menu-->
-    <div class="container-fluid sob-menu fixed-top">
+    <div class="container-fluid sob-menu fixed-top d-none d-sm-block">
         <div class="row">
             <div class="col-sm " style="background-color: var(--primary-color);">
                 <div class="d-flex justify-content-around align-items-center">
@@ -58,30 +55,79 @@ foreach ($produtosCarrinho as $produto) {
         </div>
     </div>
 
+    <!--Mobile sob menu-->
+    <div class="navbar-area d-block d-sm-none fixed-top">
+        <div class="container">
+            <nav class="site-navbar">
+
+                <div class="logo"><img src="images/diversos/logo-nome.png" alt="" height="50"></div>
+                <ul>
+                    <div class="my-5">
+                        <input class="input-search rounded-start-3" type="search" name="" id="">
+                        <button class="btn-yellow rounded-end-3">Pesquisar</button>
+                    </div>
+                    <?php
+                    session_start();
+                    if (isset($_SESSION['IDuser'])) {
+                        echo '<li><a class="text-white"> Olá, ' . $_SESSION['Nome'] . '!</a></li>';
+                    } else {
+                        echo '<a href="pages/login.php"><button class="btn btn-primary-new mt-5"><i class="fa-solid fa-user"></i> Entrar</button></a>';
+                    }
+                    ?>
+
+                    <li><a href="#">Início</a></li>
+                    <li><a href="#categoria">Categorias</a></li>
+                    <li><a href="#top-vendas">Recomendados</a></li>
+                    <li><a href="pages/cart.php" class=""><i class="fa-solid fa-cart-shopping"></i> Ver carrinho</a></li>
+
+                    <li><a href="pages/admPage.php" class="" style="<?php echo $admContent; ?>"><i class="fa-solid fa-screwdriver-wrench"></i> Painel Adm.</a></li>
+
+                    <?php
+                    session_start();
+                    if (isset($_SESSION['IDuser'])) {
+                        echo '<li><a href="assets/logout.php" class="" title="Sair"><i class="fa-solid fa-right-from-bracket"></i>Sair</a></li>';
+                    }
+                    ?>
+                </ul>
+
+                <button class="nav-toggler">
+                    <span></span>
+                </button>
+            </nav>
+        </div>
+    </div>
+
+    <div class="d-block d-sm-none" style="padding-top: 6rem;"></div>
+
     <!--Menu-->
-    <div class="container-fluid" style="padding-top: 7.5rem;">
+    <div class="container-fluid d-none d-sm-block" style="padding-top: 7.5rem;">
         <div class="row">
             <div class="col-sm" style="background-color: var(--grey-color); height: 5rem;">
                 <nav class="nav-bar d-flex flex-row justify-content-around align-items-center">
                     <ul>
-                        <li><a href="#">Início</a></li>
+                        <li><a href="#" class="link active">Início</a></li>
                         <li><a href="#categoria">Categorias</a></li>
                         <li><a href="#top-vendas">Recomendados</a></li>
                     </ul>
                     <div class="float-end me-5 d-flex flex-row justify-content-evenly">
                         <?php
                         session_start();
-                        if (isset($_SESSION['IDcliente'])) {
+                        if (isset($_SESSION['IDuser'])) {
                             echo '<p> Olá, ' . $_SESSION['Nome'] . '!</p>';
                         } else {
                             echo '<a href="pages/login.php"><button class="btn btn-primary-new"><i class="fa-solid fa-user"></i> Entrar</button></a>';
                         }
                         ?>
-                        <a href="pages/cart.php" class="px-4"><i class="fa-solid fa-cart-shopping"></i></a>
+                        <a href="pages/cart.php" class="link px-4"><i class="fa-solid fa-cart-shopping"></i> Ver carrinho</a>
 
-                        <a href="pages/admPage.php" class="px-4" style="<?php echo $admContent; ?>"><i class="fa-solid fa-screwdriver-wrench"></i>Painel Adm.</a>
+                        <a href="pages/admPage.php" class="link px-4" style="<?php echo $admContent; ?>"><i class="fa-solid fa-screwdriver-wrench"></i> Painel Adm.</a>
 
-                        <a href="assets/logout.php" class="px-4" title="Sair"><i class="fa-solid fa-right-from-bracket"></i></a>
+                        <?php
+                        session_start();
+                        if (isset($_SESSION['IDuser'])) {
+                            echo '<a href="assets/logout.php" class="link px-4" title="Sair"><i class="fa-solid fa-right-from-bracket"></i>Sair</a>';
+                        }
+                        ?>
                     </div>
                 </nav>
 
@@ -101,7 +147,6 @@ foreach ($produtosCarrinho as $produto) {
             </div>
         </div>
     </div>
-
 
     <!--Carousel-->
     <div id="carouselExampleRide" class="carousel slide" data-bs-ride="true">
@@ -133,7 +178,7 @@ foreach ($produtosCarrinho as $produto) {
         </div>
     </div>
     <div class="container-fluid">
-        <div class="col-sm d-flex flex-row flex-wrap justify-content-evenly">
+        <div class="col-sm d-flex flex-row flex-wrap justify-content-evenly" style="z-index: -99;">
             <div class="card-container">
                 <div class="card-promo">
                     <div class="front-content">
@@ -145,7 +190,17 @@ foreach ($produtosCarrinho as $produto) {
                         <p>
                             Massa de tapioca pronta, Grafino com 30% de desconto.
                         </p>
-                        <button class="btn-yellow rounded">Comprar</button>
+                        <?php
+                        include('connect_db.php');
+
+                        $sql = "SELECT * FROM Produtos WHERE IDproduto = 14";
+                        $result = mysqli_query($conn, $sql);
+
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            echo "<input type='hidden' name='IDproduto' value=<" . $row['IDproduto'] . ">";
+                            echo "<a href='adicionar_carrinho.php?idProduto=" . $row['IDproduto'] . "'class='btn-promo btn-add-car'>Comprar</a>";
+                        }
+                        ?>
                     </div>
                 </div>
             </div>
@@ -162,7 +217,17 @@ foreach ($produtosCarrinho as $produto) {
                         <p>
                             Pão de queijo pronto para ir ao forno, 300g DeMarchi com 40% de desconto.
                         </p>
-                        <button class="btn-yellow rounded">Comprar</button>
+                        <?php
+                        include('connect_db.php');
+
+                        $sql = "SELECT * FROM Produtos WHERE IDproduto = 13";
+                        $result = mysqli_query($conn, $sql);
+
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            echo "<input type='hidden' name='IDproduto' value=<" . $row['IDproduto'] . ">";
+                            echo "<a href='adicionar_carrinho.php?idProduto=" . $row['IDproduto'] . "'class='btn-promo btn-add-car'>Comprar</a>";
+                        }
+                        ?>
                     </div>
                 </div>
             </div>
@@ -178,7 +243,17 @@ foreach ($produtosCarrinho as $produto) {
                         <p>
                             Açaí Goola 250ml zero glútem, gordura trans e lactose. Saboroso e original do Brasil.
                         </p>
-                        <button class="btn-yellow rounded">Comprar</button>
+                        <?php
+                        include('connect_db.php');
+
+                        $sql = "SELECT * FROM Produtos WHERE IDproduto = 6";
+                        $result = mysqli_query($conn, $sql);
+
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            echo "<input type='hidden' name='IDproduto' value=<" . $row['IDproduto'] . ">";
+                            echo "<a href='adicionar_carrinho.php?idProduto=" . $row['IDproduto'] . "'class='btn-promo btn-add-car'>Comprar</a>";
+                        }
+                        ?>
                     </div>
                 </div>
             </div>
@@ -194,7 +269,17 @@ foreach ($produtosCarrinho as $produto) {
                         <p>
                             Paçoca/Doce de amendoim Moreninha do Rio, com 16 unidades. Compre agora com 30% de desconto.
                         </p>
-                        <button class="btn-yellow rounded">Comprar</button>
+                        <?php
+                        include('connect_db.php');
+
+                        $sql = "SELECT * FROM Produtos WHERE IDproduto = 12";
+                        $result = mysqli_query($conn, $sql);
+
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            echo "<input type='hidden' name='IDproduto' value=<" . $row['IDproduto'] . ">";
+                            echo "<a href='adicionar_carrinho.php?idProduto=" . $row['IDproduto'] . "'class='btn-promo btn-add-car'>Comprar</a>";
+                        }
+                        ?>
                     </div>
                 </div>
             </div>
@@ -300,17 +385,24 @@ foreach ($produtosCarrinho as $produto) {
                             <li><i class="fa-regular fa-star-half-stroke"></i></li>
                         </ol>';
                     echo "<p class=''>" . $row['NomeProduto'] . "</p>";
-                    echo "<div class='d-flex flex-row justify-content-around align-items-center pb-2'>
-                            <p class='fs-2'>" . $row['PrecoPromo'] . " €</p>";
-                    echo "<p class='text-danger text-decoration-line-through px-3'>" . $row['Preco'] . " €</p>";
-                    echo "<form action='index.php' method='post'>";
-                    echo "<input type='hidden' name='IDproduto' value=<" . $row['IDproduto'] . ">";
-                    echo "<a href='adicionar_carrinho.php?idProduto=" . $row['IDproduto'] . "' class='btn-add-car float-end'><i class='fa-solid fa-cart-plus'></i></a>
-                    </form>
-                        </div>
+                    echo "<div class='d-flex flex-row justify-content-around align-items-center pb-2'>";
+
+                    if ($row['QtEstoque'] == 0) {
+                        echo "<p class='text-danger'>Produto sem estoque</p>";
+                    } else {
+                        echo "<p class='fs-2'>" . $row['PrecoPromo'] . " €</p>";
+                        echo "<p class='text-danger text-decoration-line-through px-3'>" . $row['Preco'] . " €</p>";
+                        echo "<form action='index.php' method='post'>";
+                        echo "<input type='hidden' name='IDproduto' value='" . $row['IDproduto'] . "'>";
+                        echo "<a href='adicionar_carrinho.php?idProduto=" . $row['IDproduto'] . "' class='btn-add-car float-end'><i class='fa-solid fa-cart-plus'></i></a>";
+                        echo "</form>";
+                    }
+
+                    echo "</div>
                     </div>
                 </div>";
                 }
+                mysqli_close($conn);
                 ?>
             </div>
         </div>
@@ -376,20 +468,26 @@ foreach ($produtosCarrinho as $produto) {
                             <li><i class="fa-regular fa-star-half-stroke"></i></li>
                         </ol>';
                     echo "<p class=''>" . $row['NomeProduto'] . "</p>";
-                    echo "<div class='d-flex flex-row justify-content-around align-items-center pb-2'>
-                            <p class='fs-2'>" . $row['PrecoPromo'] . " €</p>";
-                    echo "<p class='text-danger text-decoration-line-through px-3'>" . $row['Preco'] . " €</p>";
-                    echo "<form action='index.php' method='post'>";
-                    echo "<input type='hidden' name='IDproduto' value=<" . $row['IDproduto'] . ">";
-                    echo "<a href='adicionar_carrinho.php?idProduto=" . $row['IDproduto'] . "' class='btn-add-car float-end'><i class='fa-solid fa-cart-plus'></i></a>
-                    </form>
-                        </div>
+                    echo "<div class='d-flex flex-row justify-content-around align-items-center pb-2'>";
+
+                    if ($row['QtEstoque'] == 0) {
+                        echo "<p class='text-danger'>Produto sem estoque</p>";
+                    } else {
+                        echo "<p class='fs-2'>" . $row['PrecoPromo'] . " €</p>";
+                        echo "<p class='text-danger text-decoration-line-through px-3'>" . $row['Preco'] . " €</p>";
+                        echo "<form action='index.php' method='post'>";
+                        echo "<input type='hidden' name='IDproduto' value='" . $row['IDproduto'] . "'>";
+                        echo "<a href='adicionar_carrinho.php?idProduto=" . $row['IDproduto'] . "' class='btn-add-car float-end'><i class='fa-solid fa-cart-plus'></i></a>";
+                        echo "</form>";
+                    }
+
+                    echo "</div>
                     </div>
                 </div>";
                 }
+                mysqli_close($conn);
                 ?>
             </div>
-
 
             <div class="col-md-4">
                 <?php
@@ -423,8 +521,8 @@ foreach ($produtosCarrinho as $produto) {
                         </ol>';
                     echo "<p class=''>" . $row['NomeProduto'] . "</p>";
                     echo "<div class=''>
-                            <p class='text-danger text-decoration-line-through m-0' style='font-size: 2rem;'>" . $row['PrecoPromo'] . " €</p>";
-                    echo "<p style='font-size: 4rem;'>" . $row['Preco'] . " €</p>";
+                            <p class='text-danger text-decoration-line-through m-0' style='font-size: 2rem;'>" . $row['Preco'] . " €</p>";
+                    echo "<p style='font-size: 4rem;'>" . $row['PrecoPromo'] . " €</p>";
                     echo "<input type='hidden' name='IDproduto' value=<" . $row['IDproduto'] . ">";
                     echo "<a href='adicionar_carrinho.php?idProduto=" . $row['IDproduto'] . "' class='btn btn-add-car btn-primary-new mb-4 w-100'>Adicionar ao carrinho</a>
                         </div>
@@ -476,6 +574,9 @@ foreach ($produtosCarrinho as $produto) {
         </div>
     </div>
 
+    <!--Scroll to top-->
+    <button onclick="topFunction()" id="topBtn" title="Go to top"><i class="fa-solid fa-arrow-up"></i></button>
+
     <!--Sob footer-->
     <div class="container-fluid pt-5 text-white" style="background-color: var(--soft-black);">
         <div class="row d-flex justify-content-between">
@@ -489,7 +590,7 @@ foreach ($produtosCarrinho as $produto) {
                 <h3>Loja física</h3>
                 <p>Morada: rua Dom Joao VI, n35, loja 4, Lisboa</p>
                 <p>tel: 213 145 221</p>
-                <p>Email: <a href="mailto:email@email.com">apoiocliente@saboresdobrasil.com</a></p>
+                <p>Email: <a href="mailto:email@email.com" class="text-email">apoiocliente@saboresdobrasil.com</a></p>
             </div>
         </div>
     </div>
@@ -514,42 +615,7 @@ foreach ($produtosCarrinho as $produto) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
 
     <script src="JS/countdown.js"></script>
-
-    <!-- Script para enviar a solicitação AJAX -->
-    <script>
-        // Selecione o botão "Adicionar ao carrinho"
-        const btnsAdicionarCarrinho = document.querySelectorAll('.btn-add-car');
-
-        // Selecione a div para exibir a mensagem de sucesso
-        const divMensagem = document.querySelector('#msg-sucesso');
-
-        // Adicione um ouvinte de eventos de clique a cada botão
-        btnsAdicionarCarrinho.forEach(btn => {
-            btn.addEventListener('click', () => {
-                // Envie uma solicitação AJAX para adicionar_carrinho.php
-                fetch('adicionar_carrinho.php', {
-                        method: 'POST'
-                    })
-                    .then(response => {
-                        // Verifique se a resposta tem um código de status 204 (sem conteúdo)
-                        if (response.status === 204) {
-                            // Exiba a mensagem de sucesso na página
-                            divMensagem.style.display = 'block';
-
-                            // Oculte a mensagem após 3 segundos
-                            setTimeout(() => {
-                                divMensagem.style.display = 'none';
-                            }, 4000);
-                        } else {
-                            console.error('Erro ao adicionar produto ao carrinho');
-                        }
-                    })
-                    .catch(error => {
-                        console.error(error);
-                    });
-            });
-        });
-    </script>
+    <script src="JS/comportamentos.js"></script>
 </body>
 
 </html>

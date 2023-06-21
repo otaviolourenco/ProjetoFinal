@@ -1,8 +1,7 @@
 <?php
-//verifica se o usuário está logado
 session_start();
 
-if (!isset($_SESSION['IDcliente'])) {
+if (!isset($_SESSION['IDuser'])) {
     echo '<script>alert("Por favor, faça o login!"); window.location.href = "pages/login.php";</script>';
     exit();
 } else {
