@@ -19,9 +19,5 @@ function adicionarAoCarrinho($idProduto)
     }
 }
 
-foreach ($_SESSION['carrinho'] as $idProduto => $quantidade) {
-    setcookie('carrinho[' . $idProduto . ']', $quantidade, time() + (86400 * 30), "/");
-}
-
 http_response_code(204);
 exit;

@@ -6,6 +6,29 @@ if ($_SESSION['NivelAcesso'] == 1) {
 } else {
     $admContent = "display: none;";
 }
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    require('../connect_db.php');
+
+    $id = $_POST['id'];
+    $nomeProduto = $_POST['NomeProduto'];
+    $preco = $_POST['Preco'];
+    $precoPromo = $_POST['PrecoPromo'];
+    $qtEstoque = $_POST['QtEstoque'];
+
+    $sql = "UPDATE Produtos SET NomeProduto=?, Preco=?, PrecoPromo=?, QtEstoque=? WHERE IDproduto=?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('sddii', $nomeProduto, $preco, $precoPromo, $qtEstoque, $id);
+
+    if ($stmt->execute()) {
+        echo '<script>alert("Produto atualizado"); window.location.href = "../pages/admPage.php";</script>';
+    } else {
+        echo '<script>alert("Erro ao atualizar produto"); window.location.href = "../pages/admPage.php";</script>';
+    }
+
+    $stmt->close();
+    $conn->close();
+}
 ?>
 
 
@@ -166,8 +189,7 @@ if ($_SESSION['NivelAcesso'] == 1) {
                 ?>
             </div>
 
-            <!--Administrativo dos produtos-->
-
+            <!--Administração dos produtos-->
             <div class="col-md-5 d-flex flex-column justify-content-center align-items-center rounded-3 mb-4 p-5" style="background-color: var(--grey-color)">
                 <h2 class="m-3 text-center">Adicione aqui os produtos</h2>
                 <form action="../images/inserir_produtos.php" method="POST" enctype="multipart/form-data" id="form-add-produto">
@@ -192,7 +214,7 @@ if ($_SESSION['NivelAcesso'] == 1) {
         </div>
     </div>
 
-    <!--Gestão produtos-->
+    <!--Gestão dos Produtos-->
     <div class="container">
         <div class="row">
             <div class="col-md">
@@ -206,7 +228,7 @@ if ($_SESSION['NivelAcesso'] == 1) {
 
                     if ($result->num_rows > 0) {
                         while ($row = $result->fetch_assoc()) {
-                            echo '<form action="../assets/functions.php" method="post" class="form-Gest-Pdt">';
+                            echo '<form action="admPage.php" method="POST" class="form-Gest-Pdt">';
                             echo '<input type="hidden" name="id" value="' . $row['IDproduto'] . '">';
                             echo 'Nome do Produto: <input type="text" name="NomeProduto" value="' . $row['NomeProduto'] . '"><br>';
                             echo 'Preço: <input type="text" name="Preco" value="' . $row['Preco'] . '"><br>';

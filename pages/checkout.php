@@ -2,6 +2,49 @@
 session_start();
 include('../assets/functions.php');
 
+$IDusuario = $_SESSION['IDuser'];
+
+$sql = "SELECT Nome, dataNasc, Tel, Morada, CP FROM Usuarios WHERE IDuser = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param('i', $IDusuario);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $nome = $row['Nome'];
+    $dataNasc = $row['dataNasc'];
+    $tel = $row['Tel'];
+    $morada = $row['Morada'];
+    $Postal = $row['CP'];
+} else {
+    $nome = '';
+    $dataNasc = '';
+    $tel = '';
+    $morada = '';
+    $Postal = '';
+}
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (isset($_POST['Nome'], $_POST['dataNasci'], $_POST['Contacto'], $_POST['Morada'], $_POST['CodPostal'])) {
+        $nome = $_POST['Nome'];
+        $dataNasc = $_POST['dataNasci'];
+        $tel = $_POST['Contacto'];
+        $morada = $_POST['Morada'];
+        $Postal = $_POST['CodPostal'];
+
+        $sql = "UPDATE Usuarios SET Nome = ?, dataNasc = ?, Tel = ?, Morada = ?, CP = ? WHERE IDuser = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('sssssi', $nome, $dataNasc, $tel, $morada, $Postal, $IDusuario);
+
+        if ($stmt->execute()) {
+            echo '<script>window.alert("Os dados foram salvos.")</script>';
+        } else {
+            echo "Erro: " . $stmt->error;
+        }
+    }
+}
+
 if (!isset($_SESSION['IDuser'])) {
     echo '<script>alert("Por favor, faça o login!"); window.location.href = "login.php";</script>';
     exit();

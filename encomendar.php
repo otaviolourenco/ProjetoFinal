@@ -38,8 +38,6 @@ if (isset($_POST['Total'])) {
     exit();
 }
 
-
-
 // Prepara a declaração SQL para inserir a encomenda no banco de dados.
 $stmt = $conn->prepare("INSERT INTO Encomendas (Cliente, Morada, Total, DataEncomenda) VALUES (?, ?, ?, NOW())");
 
@@ -47,7 +45,9 @@ $stmt->bind_param("sss", $nome, $morada, $totalEncomenda);
 
 // Executa a declaração SQL preparada.
 if ($stmt->execute()) {
-    echo "A encomenda foi inserida com sucesso!";
+    echo '<script>alert("Encomenda feita com sucesso! Aguarde o contacto da nossa equipa."); window.location.href = "index.php";</script>';
+    // Esvazia o carrinho
+    unset($_SESSION['carrinho']);
 } else {
     echo "Erro ao inserir a encomenda: " . $stmt->error;
 }
