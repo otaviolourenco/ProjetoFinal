@@ -143,7 +143,7 @@ if ($_SESSION['NivelAcesso'] == 1) {
                 if ($result->num_rows > 0) {
                     echo "<table class='table lista-checkout'>";
                     echo "<tr>";
-                    echo "<th>IDCliente </th>";
+                    echo "<th>Cliente </th>";
                     echo "<th>Morada </th>";
                     echo "<th>Total </th>";
                     echo "<th>Data da Encomenda</th>";
@@ -151,7 +151,7 @@ if ($_SESSION['NivelAcesso'] == 1) {
 
                     while ($row = $result->fetch_assoc()) {
                         echo "<tr>";
-                        echo "<td>" . $row["IDuser"] . "</td>";
+                        echo "<td>" . $row["Cliente"] . "</td>";
                         echo "<td>" . $row["Morada"] . "</td>";
                         echo "<td>" . $row["Total"] . "</td>";
                         echo "<td>" . $row["DataEncomenda"] . "</td>";
